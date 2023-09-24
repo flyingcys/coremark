@@ -38,7 +38,7 @@ portable_malloc(size_t size)
 void
 portable_free(void *p)
 {
-    rt_free(p);
+    free(p);
 }
 #else
 void *
@@ -87,10 +87,10 @@ volatile ee_s32 seed5_volatile = 0;
    increase this value.
         */
 #if USE_CLOCK
-#define NSECS_PER_SEC              CLOCKS_PER_SEC
+#define NSECS_PER_SEC              RT_TICK_PER_SECOND
 #define EE_TIMER_TICKER_RATE       1000
-#define CORETIMETYPE               clock_t
-#define GETMYTIME(_t)              (*_t = clock())
+#define CORETIMETYPE               rt_tick_t
+#define GETMYTIME(_t)              (*_t = rt_tick_get())
 #define MYTIMEDIFF(fin, ini)       ((fin) - (ini))
 #define TIMER_RES_DIVIDER          1
 #define SAMPLE_TIME_IMPLEMENTATION 1
