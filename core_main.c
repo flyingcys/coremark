@@ -440,3 +440,4 @@ for (i = 0; i < MULTITHREAD; i++)
 
     return MAIN_RETURN_VAL;
 }
+MSH_CMD_EXPORT(core_main, coremark test);
