@@ -38,7 +38,7 @@ portable_malloc(size_t size)
 void
 portable_free(void *p)
 {
-    free(p);
+    rt_free(p);
 }
 #else
 void *
