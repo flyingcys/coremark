@@ -23,6 +23,10 @@ Original Author: Shay Gal-on
 #include <valgrind/callgrind.h>
 #endif
 
+#if (MULTITHREAD > 1)
+static EventGroupHandle_t task_iterate_event_group;
+#endif
+
 #if (MEM_METHOD == MEM_MALLOC)
 /* Function: portable_malloc
         Provide malloc() functionality in a platform specific way.
@@ -251,6 +255,9 @@ portable_init(core_portable *p, int *argc, char *argv[])
 #endif /* sample of potential platform specific init via command line, reset \
           the number of contexts being used if first argument is M<n>*/
     p->portable_id = 1;
+#if (MULTITHREAD > 1)
+    task_iterate_event_group = xEventGroupCreate();
+#endif
 }
 /* Function: portable_fini
         Target specific final code
@@ -417,7 +424,43 @@ core_stop_parallel(core_results *res)
     return 1;
 }
 #else /* no standard multicore implementation */
-#error \
-    "Please implement multicore functionality in core_portme.c to use multiple contexts."
+
+void iterate_task(void *param)
+{
+    core_results *res = (core_results *)param;
+    
+    iterate(res);
+
+    xEventGroupSetBits(*(res->port.event_group), res->port.event_bit);
+
+    vTaskDelete(NULL);
+}
+
+#define SIZE_NAME 16
+
+ee_u8
+core_start_parallel(core_results *res)
+{
+    static BaseType_t core = 0;
+    char name[SIZE_NAME + 1] = {0};
+
+    snprintf(name, SIZE_NAME, "iterate-%d", core);
+    
+    res->port.event_bit = (1 << core);
+    res->port.event_group = &task_iterate_event_group;
+
+    xTaskCreatePinnedToCore(iterate_task, name, 8192, res, 1, NULL, core);
+
+    core += 1;
+
+    return 1;
+}
+ee_u8
+core_stop_parallel(core_results *res)
+{
+    xEventGroupWaitBits(*(res->port.event_group), res->port.event_bit, false, false, 120000 / portTICK_PERIOD_MS);
+
+    return 1;
+}
 #endif /* multithread implementations */
 #endif

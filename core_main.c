@@ -106,13 +106,13 @@ char *mem_name[3] = { "Static", "Heap", "Stack" };
 
 #if MAIN_HAS_NOARGC
 MAIN_RETURN_TYPE
-core_main(void)
+coremark_main(void)
 {
     int   argc = 0;
     char *argv[1];
 #else
 MAIN_RETURN_TYPE
-core_main(int argc, char *argv[])
+coremark_main(int argc, char *argv[])
 {
 #endif
     ee_u16       i, j = 0, num_algorithms = 0;
@@ -440,4 +440,3 @@ for (i = 0; i < MULTITHREAD; i++)
 
     return MAIN_RETURN_VAL;
 }
-MSH_CMD_EXPORT(core_main, coremark test);
