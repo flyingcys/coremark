@@ -23,7 +23,7 @@ Original Author: Shay Gal-on
 #ifndef CORE_PORTME_H
 #define CORE_PORTME_H
 
-#define         COMPILER_FLAGS                  "-O3"
+#define         COMPILER_FLAGS                  "-O2"
 #define         MAIN_HAS_NOARGC                 1
 #define         SEED_METHOD                     SEED_VOLATILE
 #define         ITERATIONS                      10000
